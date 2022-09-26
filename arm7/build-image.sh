@@ -1,20 +1,24 @@
 #!/usr/bin/env bash
 
-cd arm7
+pip install conan
 
-profile="default"
-conan profile new $profile --detect
+mkdir ~/.conan
+cp ./arm7/settings.yml ~/.conan/settings.yml
 
-cat ~/.conan/profiles/$profile
-
-conan profile update settings.arch=armv7 $profile
-conan profile update settings.arch_build=armv7 $profile
-
-conan profile update settings.compiler.libcxx=libstdc++11 $profile
-conan profile update conf.tools.system.package_manager:sudo=True $profile
-conan profile update conf.tools.system.package_manager:mode=install $profile
+## Build dir can be created locally
+rm -rf arm7_build
+mkdir arm7_build
+cd arm7_build
 
 export CONAN_SYSREQUIRES_MODE="enabled"
 export CONAN_SYSREQUIRES_SUDO="1"
 
-conan install .. --build=missing --profile "$profile"
+conan install .. --build=missing --profile "../arm7/profiles/default"
+echo $? && exit 1;
+
+cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
+echo $? && exit 1;
+
+cmake --build
+echo $? && exit 1;
+

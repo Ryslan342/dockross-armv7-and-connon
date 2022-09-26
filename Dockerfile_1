@@ -1,0 +1,7 @@
+#FROM conanio/gcc10-armv7
+
+WORKDIR /work
+
+COPY ./ ./
+
+RUN /bin/bash
